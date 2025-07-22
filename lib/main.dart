@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciamento_estado/builders/observable_builder.dart';
+import 'package:gerenciamento_estado/builders/observable_state_builder.dart';
 import 'package:gerenciamento_estado/classes/counter_state.dart';
 import 'package:gerenciamento_estado/controllers/state_observable.dart';
 
@@ -33,11 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final observableCounter = StateObservable(0);
   final counterState = CounterState();
 
-  initState() {
-    observableCounter.addListener(callback);
-    super.initState();
-  }
-
   void callback() {
     setState(() {});
   }
@@ -50,43 +46,30 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ObservableBuilder(
-              observable: counterState,
-              child: const Text("Child Widget"),
-              builder: (context, child) {
-                return Column(
-                  children: [
-                    Text(
-                      "Valor de estado do ChangeState: ${counterState.counter}",
-                    ),
-                    child!,
-                  ],
+            ObservableStateBuilder(
+              stateObservable: observableCounter,
+              listener: (context, state) {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Valor do CounterState: $state')),
                 );
               },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                counterState.increment();
+              buildWhen: (oldState, newState) {
+                return newState % 2 == 0;
               },
-              child: Text("Incrementar"),
-            ),
-            Text(
-              "Valor de estado do StateObservable: ${observableCounter.state}",
+              builder: (context, state, child) {
+                return Text('Valor do CounterState: $state');
+              },
             ),
             ElevatedButton(
               onPressed: () {
                 observableCounter.state++;
               },
-              child: Text("Incrementar"),
+              child: const Text('Incrementar'),
             ),
           ],
         ),
       ),
     );
-  }
-
-  void dispose() {
-    observableCounter.removeListener(callback);
-    super.dispose();
   }
 }
