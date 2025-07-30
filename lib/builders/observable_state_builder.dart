@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciamento_estado/controllers/state_observable.dart';
-
+import '../controllers/state_observable.dart';
 class ObservableStateBuilder<T> extends StatefulWidget {
   final StateObservable<T> stateObservable;
   final Widget Function(BuildContext context, T state, Widget? child) builder;

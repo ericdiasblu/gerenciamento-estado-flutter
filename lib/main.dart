@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciamento_estado/builders/observable_builder.dart';
-import 'package:gerenciamento_estado/builders/observable_state_builder.dart';
 import 'package:gerenciamento_estado/classes/counter_state.dart';
 import 'package:gerenciamento_estado/controllers/state_observable.dart';
 import 'package:gerenciamento_estado/mixins/change_state_mixin.dart';
@@ -38,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> with ChangeStateMixin {
   final counterState = CounterState();
   late StateObservable<int> newMixinCounter;
 
+  @override
   initState() {
     useChangeState(observableCounter);
     useChangeState(counterState);

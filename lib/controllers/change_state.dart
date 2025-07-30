@@ -1,4 +1,4 @@
-import 'package:gerenciamento_estado/contracts/observable.dart';
+import '../contracts/observable.dart';
 
 class ChangeState extends Observable{
   final List<void Function()> _callbacks = [];

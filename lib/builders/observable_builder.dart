@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciamento_estado/contracts/observable.dart';
+
+import '../contracts/observable.dart';
 
 class ObservableBuilder extends StatefulWidget {
   final Observable observable;
@@ -15,7 +16,7 @@ class _ObservableBuilderState extends State<ObservableBuilder> {
 
   @override
   void initState() {
-    widget.observable?.addListener(rebuild);
+    widget.observable.addListener(rebuild);
     super.initState();
   }
 
@@ -30,7 +31,7 @@ class _ObservableBuilderState extends State<ObservableBuilder> {
 
   @override
   void dispose() {
-    widget.observable?.removeListener(rebuild);
+    widget.observable.removeListener(rebuild);
     super.dispose();
   }
 }
