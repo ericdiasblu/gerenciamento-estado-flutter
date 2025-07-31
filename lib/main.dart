@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:gerenciamento_estado/classes/counter_state.dart';
 import 'package:gerenciamento_estado/controllers/state_observable.dart';
+import 'package:gerenciamento_estado/controllers/stream_notifier_imp.dart';
 import 'package:gerenciamento_estado/mixins/change_state_mixin.dart';
 
 void main() {
@@ -31,51 +34,43 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with ChangeStateMixin {
-  final observableCounter = StateObservable(0);
-  final counterState = CounterState();
-  late StateObservable<int> newMixinCounter;
+class _MyHomePageState extends State<MyHomePage> {
+  final _counterNotifier = StreamNotifier(0);
+
+  late StreamSubscription<int>? _streamSubscription;
 
   @override
-  initState() {
-    useChangeState(observableCounter);
-    useChangeState(counterState);
-    newMixinCounter = useStateObservable(0);
+  void initState() {
+    _streamSubscription = _counterNotifier.stream.listen((newState) {
+      if (mounted) setState(() {});
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Gerenciamento de Estado"), centerTitle: true),
+      appBar: AppBar(title: Text('Gerenciamento de Estado')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Valor do CounterState: ${counterState.counter}'),
+            Text('Valor do Counter: ${_counterNotifier.state}'),
             ElevatedButton(
               onPressed: () {
-                counterState.increment();
+                _counterNotifier.emit(_counterNotifier.state + 1);
               },
-              child: const Text('Incrementar'),
-            ),
-            Text('Valor do ObservableCounter: ${observableCounter.state}'),
-            ElevatedButton(
-              onPressed: () {
-                observableCounter.state++;
-              },
-              child: const Text('Incrementar'),
-            ),
-            Text('Valor do newMixinCounter: ${newMixinCounter.state}'),
-            ElevatedButton(
-              onPressed: () {
-                newMixinCounter.state++;
-              },
-              child: const Text('Incrementar'),
+              child: Text('Incrementar'),
             ),
           ],
         ),
       ),
     );
+  }
+  @override
+  void dispose() {
+    _streamSubscription?.cancel();
+    _streamSubscription = null;
+    super.dispose();
   }
 }
