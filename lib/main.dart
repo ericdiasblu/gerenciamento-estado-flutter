@@ -1,10 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:gerenciamento_estado/classes/counter_state.dart';
-import 'package:gerenciamento_estado/controllers/state_observable.dart';
+import 'package:gerenciamento_estado/builders/stream_notifier_builder.dart';
 import 'package:gerenciamento_estado/controllers/stream_notifier_imp.dart';
-import 'package:gerenciamento_estado/mixins/change_state_mixin.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,16 +33,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _counterNotifier = StreamNotifier(0);
 
-  late StreamSubscription<int>? _streamSubscription;
-
-  @override
-  void initState() {
-    _streamSubscription = _counterNotifier.stream.listen((newState) {
-      if (mounted) setState(() {});
-    });
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +41,18 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Valor do Counter: ${_counterNotifier.state}'),
+            StreamNotifierBuilder(
+              listen: (context, state) {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Valor emitido: $state')),
+                );
+              },
+              streamNotifier: _counterNotifier,
+              builder: (context, state) {
+                return Text('Valor do Counter: ${_counterNotifier.state}');
+              },
+            ),
             ElevatedButton(
               onPressed: () {
                 _counterNotifier.emit(_counterNotifier.state + 1);
@@ -66,11 +63,5 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
-  }
-  @override
-  void dispose() {
-    _streamSubscription?.cancel();
-    _streamSubscription = null;
-    super.dispose();
   }
 }
